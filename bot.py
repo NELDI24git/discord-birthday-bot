@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from contextlib import asynccontextmanager
 import logging
 import os
 from datetime import date, datetime
@@ -65,16 +66,20 @@ class Database:
     def __init__(self, path: Path):
         self.path = path
 
-    async def connect(self) -> aiosqlite.Connection:
+    @asynccontextmanager
+    async def connect(self):
         self.path.parent.mkdir(parents=True, exist_ok=True)
         db = await aiosqlite.connect(self.path)
-        db.row_factory = aiosqlite.Row
-        await db.execute("PRAGMA foreign_keys = ON")
-        await db.execute("PRAGMA journal_mode = WAL")
-        return db
+        try:
+            db.row_factory = aiosqlite.Row
+            await db.execute("PRAGMA foreign_keys = ON")
+            await db.execute("PRAGMA journal_mode = WAL")
+            yield db
+        finally:
+            await db.close()
 
     async def initialize(self) -> None:
-        async with await self.connect() as db:
+        async with self.connect() as db:
             await db.executescript(
                 """
                 CREATE TABLE IF NOT EXISTS birthdays (
@@ -113,7 +118,7 @@ class Database:
             await db.commit()
 
     async def ensure_guild(self, guild_id: int) -> None:
-        async with await self.connect() as db:
+        async with self.connect() as db:
             await db.execute(
                 """
                 INSERT OR IGNORE INTO guild_settings
@@ -133,7 +138,7 @@ class Database:
         year: Optional[int],
         created_by: int,
     ) -> None:
-        async with await self.connect() as db:
+        async with self.connect() as db:
             await db.execute(
                 """
                 INSERT INTO birthdays (
@@ -156,7 +161,7 @@ class Database:
             await db.commit()
 
     async def remove_birthday(self, guild_id: int, user_id: int) -> bool:
-        async with await self.connect() as db:
+        async with self.connect() as db:
             cursor = await db.execute(
                 "DELETE FROM birthdays WHERE guild_id = ? AND user_id = ?",
                 (guild_id, user_id),
@@ -165,7 +170,7 @@ class Database:
             return cursor.rowcount > 0
 
     async def get_birthday(self, guild_id: int, user_id: int):
-        async with await self.connect() as db:
+        async with self.connect() as db:
             cursor = await db.execute(
                 """
                 SELECT birth_day, birth_month, birth_year
@@ -177,7 +182,7 @@ class Database:
             return await cursor.fetchone()
 
     async def get_birthdays(self, guild_id: int):
-        async with await self.connect() as db:
+        async with self.connect() as db:
             cursor = await db.execute(
                 """
                 SELECT user_id, birth_day, birth_month, birth_year
@@ -190,7 +195,7 @@ class Database:
 
     async def get_settings(self, guild_id: int):
         await self.ensure_guild(guild_id)
-        async with await self.connect() as db:
+        async with self.connect() as db:
             cursor = await db.execute(
                 "SELECT * FROM guild_settings WHERE guild_id = ?",
                 (guild_id,),
@@ -199,7 +204,7 @@ class Database:
 
     async def set_channel(self, guild_id: int, channel_id: int) -> None:
         await self.ensure_guild(guild_id)
-        async with await self.connect() as db:
+        async with self.connect() as db:
             await db.execute(
                 """
                 UPDATE guild_settings
@@ -212,7 +217,7 @@ class Database:
 
     async def set_timezone(self, guild_id: int, timezone_name: str) -> None:
         await self.ensure_guild(guild_id)
-        async with await self.connect() as db:
+        async with self.connect() as db:
             await db.execute(
                 "UPDATE guild_settings SET timezone = ? WHERE guild_id = ?",
                 (timezone_name, guild_id),
@@ -221,7 +226,7 @@ class Database:
 
     async def set_hour(self, guild_id: int, hour: int) -> None:
         await self.ensure_guild(guild_id)
-        async with await self.connect() as db:
+        async with self.connect() as db:
             await db.execute(
                 "UPDATE guild_settings SET announcement_hour = ? WHERE guild_id = ?",
                 (hour, guild_id),
@@ -230,7 +235,7 @@ class Database:
 
     async def set_message(self, guild_id: int, message: str) -> None:
         await self.ensure_guild(guild_id)
-        async with await self.connect() as db:
+        async with self.connect() as db:
             await db.execute(
                 "UPDATE guild_settings SET announcement_message = ? WHERE guild_id = ?",
                 (message, guild_id),
@@ -240,7 +245,7 @@ class Database:
     async def was_sent(
         self, guild_id: int, user_id: int, birthday_date: str
     ) -> bool:
-        async with await self.connect() as db:
+        async with self.connect() as db:
             cursor = await db.execute(
                 """
                 SELECT 1 FROM sent_announcements
@@ -253,7 +258,7 @@ class Database:
     async def mark_sent(
         self, guild_id: int, user_id: int, birthday_date: str
     ) -> None:
-        async with await self.connect() as db:
+        async with self.connect() as db:
             await db.execute(
                 """
                 INSERT OR IGNORE INTO sent_announcements
