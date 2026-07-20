@@ -1,0 +1,4 @@
+discord.py>=2.6,<3.0
+aiosqlite>=0.20,<1.0
+python-dotenv>=1.0,<2.0
+tzdata>=2025.2
