@@ -30,11 +30,6 @@
 python --version
 ```
 
-На Windows иногда используется команда:
-
-```powershell
-py --version
-```
 
 ## 2. Создание приложения в Discord
 
@@ -59,8 +54,6 @@ py --version
 ## 3. Установка
 
 ### Windows PowerShell
-
-Откройте папку проекта:
 
 ```powershell
 cd путь\к\discord_birthday_bot
@@ -108,7 +101,7 @@ nano .env
 
 ```env
 DISCORD_TOKEN=сюда_токен_бота
-DEFAULT_TIMEZONE=Asia/Almaty
+DEFAULT_TIMEZONE=ваша_зона
 DATABASE_PATH=data/birthdays.db
 DEV_GUILD_ID=
 ```
@@ -185,7 +178,4 @@ SQLite подходит для одного процесса бота. Не за
 
 ## Безопасность
 
-- Не добавляйте `.env` в Git.
-- При утечке токена сразу сделайте **Reset Token** в Developer Portal.
-- Бот не запрашивает Message Content Intent.
 - Упоминания `@everyone` и ролей отключены программно.
