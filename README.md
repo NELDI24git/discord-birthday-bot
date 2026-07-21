@@ -27,7 +27,7 @@
 Проверка Python:
 
 ```bash
-python --version
+python3 --version
 ```
 
 
