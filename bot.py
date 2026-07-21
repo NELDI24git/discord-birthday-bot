@@ -371,13 +371,13 @@ class BirthdayBot(commands.Bot):
             if row["birth_year"]:
                 age = now.year - row["birth_year"]
 
-message = settings["announcement_message"].format(
+        message = settings["announcement_message"].format(
     mention=mention,
     user_id=row["user_id"],
     age=age if age is not None else "",
 )
 
-            embed = discord.Embed(
+        embed = discord.Embed(
                 title="🎉 День рождения!",
                 description=message,
                 timestamp=now,
