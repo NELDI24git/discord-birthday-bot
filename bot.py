@@ -373,18 +373,18 @@ class BirthdayBot(commands.Bot):
 
 raw_message = settings["announcement_message"]
 
-birthday_messages = [
-    "🎂 Сегодня день рождения у {mention}! Поздравляем! 🎉",
-    "🎉 Все поздравляем {mention} с днём рождения!",
-    "🥳 Сегодня особенный день — день рождения у {mention}!",
-    "🎈 С днём рождения, {mention}! Желаем всего самого лучшего!",
-    "🍰 Сегодня торт достаётся {mention}! С днём рождения!",
-    "🎊 У {mention} сегодня день рождения! Поздравляем!",
-    "НИЧЕГО СЕБЕ А У КОГО СЕГОДНЯ ДЕНЬ РОЖДЕНИЕ? Конечно же у {mention}, поздравляем!",
-    "Тебе достаётся уникальное поздравление с твоим сегодняшним днём рождения {mention}, желаю тебе чтоб хуй стоял, и деньги были!"
+templates = [
+    item.strip()
+    for item in re.split(r"\s*(?:\||\n+)\s*", raw_message)
+    if item.strip()
 ]
 
-message_template = random.choice(birthday_messages)
+if not templates:
+    templates = [
+        "🎂 Сегодня день рождения у {mention}! Поздравляем! 🎉"
+    ]
+
+message_template = random.choice(templates)
 
 message = message_template.format(
     mention=mention,
