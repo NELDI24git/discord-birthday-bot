@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 import asyncio
 from contextlib import asynccontextmanager
 import logging
@@ -369,11 +370,19 @@ class BirthdayBot(commands.Bot):
             if row["birth_year"]:
                 age = now.year - row["birth_year"]
 
-            message = settings["announcement_message"].format(
-                mention=mention,
-                user_id=row["user_id"],
-                age=age if age is not None else "",
-            )
+templates = [
+    item.strip()
+    for item in settings["announcement_message"].split("|")
+    if item.strip()
+]
+
+message_template = random.choice(templates)
+
+message = message_template.format(
+    mention=mention,
+    user_id=row["user_id"],
+    age=age if age is not None else "",
+)
 
             embed = discord.Embed(
                 title="🎉 День рождения!",
