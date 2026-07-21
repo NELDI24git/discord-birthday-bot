@@ -371,22 +371,7 @@ class BirthdayBot(commands.Bot):
             if row["birth_year"]:
                 age = now.year - row["birth_year"]
 
-raw_message = settings["announcement_message"]
-
-templates = [
-    item.strip()
-    for item in re.split(r"\s*(?:\||\n+)\s*", raw_message)
-    if item.strip()
-]
-
-if not templates:
-    templates = [
-        "🎂 Сегодня день рождения у {mention}! Поздравляем! 🎉"
-    ]
-
-message_template = random.choice(templates)
-
-message = message_template.format(
+message = settings["announcement_message"].format(
     mention=mention,
     user_id=row["user_id"],
     age=age if age is not None else "",
