@@ -1,85 +1,84 @@
 # Discord Birthday Bot
 
-Рабочий MVP бота дней рождения на Python.
+A working MVP birthday bot written in Python.
 
-## Возможности
+## Features
 
-- `/birthday set` — пользователь сохраняет свою дату.
-- `/birthday view` — просматривает свою дату.
-- `/birthday remove` — удаляет свою дату.
-- `/birthday upcoming` — список ближайших дней рождения.
-- `/birthday-admin set` — администратор добавляет дату другому участнику.
-- `/birthday-admin remove` — администратор удаляет дату участника.
-- `/birthday-admin channel` — назначает канал поздравлений.
-- `/birthday-admin timezone` — задаёт часовой пояс.
-- `/birthday-admin hour` — задаёт час отправки.
-- `/birthday-admin message` — меняет текст поздравления.
-- `/birthday-admin settings` — показывает настройки.
-- `/birthday-admin test` — проверяет отправку без ожидания следующего дня.
+- `/birthday set` — save your birthday.
+- `/birthday view` — view your birthday.
+- `/birthday remove` — delete your birthday.
+- `/birthday upcoming` — list upcoming birthdays.
+- `/birthday-admin set` — an administrator adds a birthday for another member.
+- `/birthday-admin remove` — an administrator deletes a member's birthday.
+- `/birthday-admin channel` — set the birthday announcement channel.
+- `/birthday-admin timezone` — set the time zone.
+- `/birthday-admin hour` — set the hour when announcements are sent.
+- `/birthday-admin message` — change the birthday message.
+- `/birthday-admin settings` — show the current settings.
+- `/birthday-admin test` — test message delivery without waiting for the next day.
 
-Админские команды требуют разрешение Discord «Управлять сервером».
+Admin commands require the Discord **Manage Server** permission.
 
-## 1. Требования
+## 1. Requirements
 
-- Python 3.11 или новее.
-- Discord-сервер, на котором у вас есть право управлять сервером.
+- Python 3.11 or later.
+- A Discord server where you have permission to manage the server.
 
-Проверка Python:
+Check your Python version:
 
 ```bash
 python --version
 ```
 
+## 2. Create a Discord Application
 
-## 2. Создание приложения в Discord
-
-1. Откройте Discord Developer Portal.
-2. Нажмите **New Application**.
-3. Назовите приложение, например `Birthday Bot`.
-4. Откройте раздел **Bot**.
-5. Нажмите **Reset Token** и скопируйте токен.
-6. Никому не отправляйте токен и не публикуйте файл `.env`.
-7. В разделе **Installation** или **OAuth2 → URL Generator** выберите:
+1. Open the Discord Developer Portal.
+2. Click **New Application**.
+3. Name the application, for example, `Birthday Bot`.
+4. Open the **Bot** section.
+5. Click **Reset Token** and copy the token.
+6. Do not share the token with anyone or publish the `.env` file.
+7. In **Installation** or **OAuth2 → URL Generator**, select:
    - scope: `bot`;
    - scope: `applications.commands`;
-   - права бота:
+   - bot permissions:
      - View Channels;
      - Send Messages;
      - Embed Links;
      - Read Message History.
-8. Откройте созданную ссылку и добавьте бота на сервер.
+8. Open the generated link and add the bot to your server.
 
-Для этого проекта Message Content Intent не нужен.
+This project does not need the Message Content Intent.
 
-## 3. Установка
+## 3. Installation
 
 ### Windows PowerShell
 
 ```powershell
-cd путь\к\discord_birthday_bot
+cd path\to\discord_birthday_bot
 ```
 
-Создайте виртуальное окружение:
+Create a virtual environment:
 
 ```powershell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-Если PowerShell запрещает активацию:
+If PowerShell blocks activation:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\.venv\Scripts\Activate.ps1
 ```
 
-Установите зависимости:
+Install the dependencies:
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-Создайте `.env`:
+Create the `.env` file:
 
 ```powershell
 Copy-Item .env.example .env
@@ -97,85 +96,85 @@ cp .env.example .env
 nano .env
 ```
 
-## 4. Настройка `.env`
+## 4. Configure `.env`
 
 ```env
-DISCORD_TOKEN=сюда_токен_бота
-DEFAULT_TIMEZONE=ваша_зона
+DISCORD_TOKEN=your_bot_token_here
+DEFAULT_TIMEZONE=your_timezone
 DATABASE_PATH=data/birthdays.db
 DEV_GUILD_ID=
 ```
 
-### Быстрое появление slash-команд
+### Make slash commands appear quickly
 
-Глобальные команды Discord иногда появляются не моментально. Для разработки можно указать ID сервера:
+Discord's global commands may take a while to appear. For development, you can specify a server ID:
 
-1. Discord → Настройки пользователя → Расширенные → включить **Режим разработчика**.
-2. Нажать правой кнопкой на значок сервера → **Копировать ID сервера**.
-3. Вставить значение:
+1. In Discord, go to **User Settings → Advanced** and enable **Developer Mode**.
+2. Right-click the server icon and select **Copy Server ID**.
+3. Paste the ID here:
 
 ```env
 DEV_GUILD_ID=123456789012345678
 ```
 
-После завершения разработки удалите значение `DEV_GUILD_ID`, перезапустите бота и выполнится глобальная синхронизация команд.
+When development is complete, remove the `DEV_GUILD_ID` value and restart the bot. It will then perform a global command sync.
 
-## 5. Запуск
+## 5. Run the Bot
 
 ```bash
 python bot.py
 ```
 
-Успешный запуск выглядит примерно так:
+A successful startup looks something like this:
 
 ```text
 Logged in as Birthday Bot (...)
 ```
 
-Не закрывайте окно терминала, пока бот должен работать.
+Keep the terminal window open while the bot needs to be running.
 
-## 6. Первичная настройка на сервере
+## 6. Initial Server Setup
 
-В Discord выполните:
+In Discord, run:
 
 ```text
 /birthday-admin channel
 ```
 
-Выберите канал поздравлений.
+Select the birthday announcement channel.
 
-Затем:
+Then run:
 
 ```text
 /birthday-admin timezone name:Asia/Almaty
 /birthday-admin hour hour:9
 ```
 
-Добавьте тестовую дату себе:
+Add a test birthday for yourself:
 
 ```text
 /birthday set
 ```
 
-Выберите сегодняшние день и месяц. После этого:
+Select today's day and month. Then run:
 
 ```text
 /birthday-admin test
 ```
 
-Бот должен отправить сообщение в настроенный канал.
+The bot should send a message to the configured channel.
 
-## 7. Постоянная работа
+## 7. Keep the Bot Running
 
-Для работы 24/7 бот должен постоянно выполняться на:
+To keep the bot running 24/7, it must run continuously on one of the following:
 
-- VPS;
-- домашнем компьютере, который не выключается;
-- Docker-хостинге;
-- облачном сервисе с поддержкой постоянных Python-процессов.
+- a VPS;
+- a home computer that stays on;
+- a Docker host;
+- a cloud service that supports persistent Python processes.
 
-SQLite подходит для одного процесса бота. Не запускайте две копии одновременно с одной и той же базой.
+SQLite is suitable for a single bot process. Do not run two copies at the same time using the same database.
 
-## Безопасность
+## Security
 
-- Упоминания `@everyone` и ролей отключены программно.
+- Mentions of `@everyone` and roles are disabled programmatically.
